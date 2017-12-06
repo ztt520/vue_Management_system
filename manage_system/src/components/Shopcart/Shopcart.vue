@@ -1,15 +1,17 @@
 <template>
-  <div>购物车页面</div>
+    <div>
+        购物车
+    </div>
 </template>
 <script>
-export default {
-  data() {
-      return {
+    export default {
+        data(){
+            return {
 
-      }
-  }
-}
+            }
+        }
+    }
 </script>
 <style>
-
+    
 </style>

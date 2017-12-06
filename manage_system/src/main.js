@@ -46,6 +46,7 @@ import NewsDetail from './components/News/NewsDetail.vue';
 import PhotoList from './components/Photo/PhotoList.vue';
 import PhotoDetail from './components/Photo/PhotoDetail.vue';
 import Comment from './components/Commons/Comment.vue';
+import GoodsList from './components/Goods/GoodsList.vue';
 
 
 // 路由相关组件 结束
@@ -75,6 +76,7 @@ router.addRoutes([
     {name:'photo.list',path:'/photo/list/:categoryId',component:PhotoList},//图文分享
     {name:'photo.detail',path:'/photo/detail/:imgId',component:PhotoDetail},  //图文详情
     { name:'test',path:'/test',component:Comment},//测试路由
+    { name:'goods.list',path:'/goods/list',component:GoodsList},//商品列表
 ]);
 // VueRouter 结束
 
@@ -98,7 +100,7 @@ import './static/css/global.css';
 import Axios from 'axios';
 Vue.prototype.$axios = Axios;
 //设置默认URL请求基础路径
-Axios.defaults.baseURL = 'http://192.168.159.66:8899/api/';
+Axios.defaults.baseURL = 'http://vue.studyit.io/api/';
 // Axios 结束
 
 

@@ -1,72 +1,103 @@
 ﻿<template>
-    <div>
-        <ul>
-            <li>
+<div :style="'height:' + height">
+            <nav-bar title="商品列表"></nav-bar>
+
+    <mt-loadmore :bottom-method="loadBottom" ref="loadmore" :auto-fill="isAutoFill" :bottom-all-loaded="allLoaded">
+        <ul ref="ul">
+            <li v-for="goods in goodsList" :key="goods.id">
                 <a>
-                    <img src="http://vue.studyit.io/upload/201504/20/thumb_201504200239192345.jpg">
-                    <div class="title">好东西啊</div>
+                    <img :src="goods.img_url">
+                    <div class="title">{{goods.title|convertTitle(25)}}</div>
                     <div class="desc">
                         <div class="sell">
-                            <span>￥80</span>
-                            <s>￥9000</s>
+                            <span>￥{{goods.sell_price}}</span>
+                            <s>￥{{goods.market_price}}</s>
                         </div>
                         <div class="detail">
                             <div class="hot">
                                 热卖中
                             </div>
                             <div class="count">
-                                剩99件
+                                剩{{goods.stock_quantity}}件
                             </div>
                         </div>
                     </div>
                 </a>
-            </li>
-            <li>
-                <a>
-                    <img src="http://vue.studyit.io/upload/201504/20/thumb_201504200239192345.jpg">
-                    <div class="title">好东西啊</div>
-                    <div class="desc">
-                        <div class="sell">
-                            <span>￥80</span>
-                            <s>￥9000</s>
-                        </div>
-                        <div class="detail">
-                            <div class="hot">
-                                热卖中
-                            </div>
-                            <div class="count">
-                                剩99件
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <a>
-                    <img src="http://vue.studyit.io/upload/201504/20/thumb_201504200239192345.jpg">
-                    <div class="title">好东西啊</div>
-                    <div class="desc">
-                        <div class="sell">
-                            <span>￥80</span>
-                            <s>￥9000</s>
-                        </div>
-                        <div class="detail">
-                            <div class="hot">
-                                热卖中
-                            </div>
-                            <div class="count">
-                                剩99件
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </li>
-            
-          
+            </li>         
         </ul>
-    </div>
+    </mt-loadmore>
+</div>
 </template>
 <script>
+export default {
+    props:['appRefs'],//接受app里的头和底部
+    methods:{
+        //触发上拉函数
+        loadBottom(){
+            this.$axios.get(`getgoods?pageindex=${this.page}`)
+            .then(res=>{
+                //判断是否还有数据
+                if(res.data.message.length == 0){
+                    this.$toast({
+                      message: '提示:没有更多数据了',
+                      duration: 2000
+                    });
+                    //禁止下拉刷新函数调用
+                    this.allLoaded = true;
+                    return;
+                }
+                //追加下一页的数据
+                this.goodsList = this.goodsList.concat(res.data.message);
+                this.page ++; 
+                //从loading状态通知回到pull初始状态
+                this.$refs.loadmore.onBottomLoaded();
+            })
+            .catch(err=>console.log(err));
+
+            //this.page -> 5
+            //获取第五页的数据追加，并自增 -> 6
+
+            // this.allLoaded = true; //一次后，禁止该函数的调用
+
+            //发请求获取数据
+            // this.$refs.loadmore.onBottomLoaded();
+            // console.log(this.$refs.loadmore);
+            // console.log(this.$refs.ul);
+            // console.log(this);
+        },
+        changeHeight(){//改变父盒子高度
+            this.height = document.documentElement.clientHeight -
+            this.appRefs.header.$el.offsetHeight - 
+            this.appRefs.footer.$el.offsetHeight;
+        }
+    },
+    data(){
+        return {
+            goodsList:[],//商品列表
+            isAutoFill:false,//是否自动检测，并调用loadBottom
+            allLoaded:false,//数据是否全部加载完毕，如果是，禁止函数调用
+            page:1, //页码
+            height:'',//根节点div高度
+        }
+    },
+    //操作DOM
+    mounted(){
+        this.changeHeight();
+    },
+    created(){
+        //获取路由参数
+        this.page = this.$route.query.page||1;
+        //发请求
+        this.$axios.get(`getgoods?pageindex=${this.page}`)
+        .then(res=>{
+            this.goodsList = res.data.message;
+            this.page ++; 
+        })
+        .catch(err=>console.log(err));
+    }
+}
+
+
 </script>
 <style scoped>
 

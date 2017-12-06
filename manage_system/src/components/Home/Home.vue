@@ -44,7 +44,7 @@
                 },{
                     className:'goods',
                     title:'商品列表',
-                    router:{name:'news.list'}
+                    router:{name:'goods.list'}
                 },{
                     className:'feedback',
                     title:'留言反馈',
